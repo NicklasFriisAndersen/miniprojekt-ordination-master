@@ -24,8 +24,8 @@ public class DagligFast : Ordination {
 	}
 
 	public override double doegnDosis() {
-		// TODO: Implement!
-        return -1;
+		return antalDage()/ samletDosis();
+        
 	}
 	
 	public Dosis[] getDoser() {

@@ -29,12 +29,14 @@ public abstract class Ordination {
     }
 
     public override String ToString() {
+
         return startDen.ToString();
     }
-
     /// <summary>
     /// Returnerer den totale dosis der er givet i den periode ordinationen er gyldig
     /// </summary>
+    /// 
+
     public abstract double samletDosis();
 
     /// <summary>
