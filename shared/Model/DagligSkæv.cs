@@ -6,7 +6,7 @@ public class DagligSkæv : Ordination {
     public DagligSkæv(DateTime startDen, DateTime slutDen, Laegemiddel laegemiddel) : base(laegemiddel, startDen, slutDen) {
 	}
 
-    public DagligSkæv(DateTime startDen, DateTime slutDen, Laegemiddel laegemiddel, Dosis[] doser) : base(laegemiddel, startDen, slutDen) {
+    public DagligSkæv(DateTime startDen, DateTime slutDen, Patient? patient, Laegemiddel laegemiddel, Dosis[] doser) : base(laegemiddel, startDen, slutDen) {
         this.doser = doser.ToList();
     }    
 

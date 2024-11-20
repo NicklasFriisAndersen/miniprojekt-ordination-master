@@ -69,7 +69,7 @@ public class DataService
             ordinationer[1] = new PN(new DateTime(2024, 12, 12), new DateTime(2024, 12, 14), 3, lm[0]);    
             ordinationer[2] = new PN(new DateTime(2024, 11, 20), new DateTime(2024, 11, 25), 5, lm[2]);    
             ordinationer[3] = new PN(new DateTime(2024, 11, 1), new DateTime(2024, 11, 12), 123, lm[1]);
-            ordinationer[4] = new DagligFast(new DateTime(2024, 11, 10), new DateTime(2024, 11, 12), lm[1], 2, 0, 1, 0);
+            ordinationer[4] = new DagligFast(new DateTime(2024, 11, 10), new DateTime(2024, 11, 12), p[1], lm[1], 2, 0, 1, 0);
             ordinationer[5] = new DagligSkæv(new DateTime(2024, 11, 23), new DateTime(2024, 11, 24), lm[2]);
             
             ((DagligSkæv) ordinationer[5]).doser = new Dosis[] { 
@@ -130,22 +130,44 @@ public class DataService
         return db.Laegemiddler.ToList();
     }
 
-    public PN OpretPN(int patientId, int laegemiddelId, double antal, DateTime startDato, DateTime slutDato) {
-        // TODO: Implement!
-        return null!;
+    public PN OpretPN(int patientId, int laegemiddelId, double antal, DateTime startDato, DateTime slutDato) { 
+        
+        var patient = db.Patienter.Find(patientId);
+        var lm = db.Laegemiddler.Find(laegemiddelId);
+
+       PN pn = new PN(startDato, slutDato, antal, lm);
+
+       db.PNs.Add(pn);
+       db.SaveChanges();
+
+       return pn;
     }
 
     public DagligFast OpretDagligFast(int patientId, int laegemiddelId, 
         double antalMorgen, double antalMiddag, double antalAften, double antalNat, 
-        DateTime startDato, DateTime slutDato) {
+        DateTime startDato, DateTime slutDato)
+    {
 
-        // TODO: Implement!
-        return null!;
+        var patient = db.Patienter.Find(patientId);
+        var lm = db.Laegemiddler.Find(laegemiddelId);
+
+        DagligFast df = new DagligFast(startDato, slutDato, patient, lm, antalMorgen, antalMiddag, antalAften, antalNat);
+
+        db.DagligFaste.Add(df);
+        db.SaveChanges();
+        return df;
     }
 
     public DagligSkæv OpretDagligSkaev(int patientId, int laegemiddelId, Dosis[] doser, DateTime startDato, DateTime slutDato) {
-        // TODO: Implement!
-        return null!;
+        var patient = db.Patienter.Find(patientId);
+        var lm = db.Laegemiddler.Find(laegemiddelId);
+        
+        DagligSkæv ds = new DagligSkæv(startDato, slutDato, patient, lm, doser);
+
+        db.DagligSkæve.Add(ds);
+        db.SaveChanges();
+
+        return ds;
     }
 
     public string AnvendOrdination(int id, Dato dato) {
