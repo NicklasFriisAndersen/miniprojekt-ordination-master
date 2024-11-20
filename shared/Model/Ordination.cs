@@ -23,7 +23,7 @@ public abstract class Ordination {
     public int antalDage()
     {
         if (slutDen < startDen)
-            throw new ArgumentException("Slutdatoen kan ikke være før startdatoen.");
+            throw new ArgumentException("Slutdatoen kan ikke vÃ¦re fÃ¸r startdatoen.");
 
         return (slutDen.Date - startDen.Date).Days + 1;
     }
