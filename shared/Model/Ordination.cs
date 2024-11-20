@@ -20,9 +20,12 @@ public abstract class Ordination {
     /// <summary>
     /// Antal hele dage mellem startdato og slutdato. Begge dage inklusive.
     /// </summary>
-    public int antalDage() {
-        // TODO: Implement!!
-        return -1;
+    public int antalDage()
+    {
+        if (slutDen < startDen)
+            throw new ArgumentException("Slutdatoen kan ikke være før startdatoen.");
+
+        return (slutDen.Date - startDen.Date).Days + 1;
     }
 
     public override String ToString() {
