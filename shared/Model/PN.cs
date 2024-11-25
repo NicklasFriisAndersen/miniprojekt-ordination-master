@@ -17,13 +17,26 @@ public class PN : Ordination {
     /// Returner false ellers og datoen givesDen ignoreres
     /// </summary>
     public bool givDosis(Dato givesDen) {
-        // TODO: Implement!
-        return false;
+	    if (givesDen.dato < startDen || givesDen.dato > slutDen) {
+		    return false;
+	    }
+
+	    // Tjek om datoen allerede er registreret
+	    if (dates.Any(d => d.dato == givesDen.dato)) {
+		    return false;
+	    }
+
+	    // Registrer datoen
+	    dates.Add(givesDen);
+	    return true;
     }
 
     public override double doegnDosis() {
-    	// TODO: Implement!
-        return -1;
+	    if (antalDage() == 0) {
+		    return 0; // Undgå division med nul
+	    }
+
+	    return samletDosis() / antalDage();
     }
 
 

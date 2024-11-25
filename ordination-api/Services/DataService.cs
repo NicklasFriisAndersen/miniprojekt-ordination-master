@@ -171,8 +171,23 @@ public class DataService
     }
 
     public string AnvendOrdination(int id, Dato dato) {
-        // TODO: Implement!
-        return null!;
+        // Find ordinationen
+        var ordination = db.Ordinationer.Include(o => o.laegemiddel).FirstOrDefault(o => o.OrdinationId == id);
+
+        // Tjek om ordinationen eksisterer
+        if (ordination == null) {
+            return "Ordinationen blev ikke fundet.";
+        }
+        
+        if (ordination is not PN pnOrdination) {
+            return "Kun PN-ordinationer kan anvendes på denne måde.";
+        }
+        if (!pnOrdination.givDosis(dato)) {
+            return $"Kan ikke anvende ordinationen på {dato.dato.ToShortDateString()}. Enten er datoen uden for gyldighedsperioden, eller dosis er allerede registreret.";
+        }
+
+        db.SaveChanges();
+        return "Ordinationen blev anvendt succesfuldt.";
     }
 
     /// <summary>
@@ -183,8 +198,27 @@ public class DataService
     /// <param name="laegemiddel"></param>
     /// <returns></returns>
 	public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId) {
-        
-        return -1;
+        var patient = db.Patienter.Find(patientId);
+        var lm = db.Laegemiddler.Find(laegemiddelId);
+
+        if (patient == null || lm == null)
+        {
+            throw new AggregateException("Patient eller lægemiddel findes ikke");
+        }
+
+        double vægt = patient.vaegt;
+        if (vægt < 25)
+        {
+            return vægt * lm.enhedPrKgPrDoegnLet;
+        }
+        else if (vægt <= 120)
+        {
+            return vægt * lm.enhedPrKgPrDoegnNormal;
+        }
+        else
+        {
+            return vægt * lm.enhedPrKgPrDoegnTung;
+        }
 	}
     
 }
