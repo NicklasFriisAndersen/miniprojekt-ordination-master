@@ -69,7 +69,7 @@ public class DataService
             ordinationer[1] = new PN(new DateTime(2024, 12, 12), new DateTime(2024, 12, 14), 3, lm[0]);    
             ordinationer[2] = new PN(new DateTime(2024, 11, 20), new DateTime(2024, 11, 25), 5, lm[2]);    
             ordinationer[3] = new PN(new DateTime(2024, 11, 1), new DateTime(2024, 11, 12), 123, lm[1]);
-            ordinationer[4] = new DagligFast(new DateTime(2024, 11, 10), new DateTime(2024, 11, 12), p[1], lm[1], 2, 0, 1, 0);
+            ordinationer[4] = new DagligFast(new DateTime(2024, 11, 10), new DateTime(2024, 11, 12), lm[1], 2, 0, 1, 0);
             ordinationer[5] = new DagligSkæv(new DateTime(2024, 11, 23), new DateTime(2024, 11, 24), lm[2]);
             
             ((DagligSkæv) ordinationer[5]).doser = new Dosis[] { 
@@ -138,6 +138,7 @@ public class DataService
        PN pn = new PN(startDato, slutDato, antal, lm);
 
        db.PNs.Add(pn);
+       patient.ordinationer.Add(pn);
        db.SaveChanges();
 
        return pn;
@@ -150,10 +151,20 @@ public class DataService
 
         var patient = db.Patienter.Find(patientId);
         var lm = db.Laegemiddler.Find(laegemiddelId);
+ 
+        DagligFast df = new DagligFast(startDato, slutDato, lm, antalMorgen, antalMiddag, antalAften, antalNat);
+        if (antalMorgen < 0 || antalMiddag < 0 || antalAften < 0 || antalNat < 0)
+        {
+            throw new Exception("Doser kan ikke være negative tal");
+        }
 
-        DagligFast df = new DagligFast(startDato, slutDato, patient, lm, antalMorgen, antalMiddag, antalAften, antalNat);
-
+        if (startDato > slutDato)
+        {
+            throw new Exception("Din startdato kan ikke være efter din slutdato");
+        }
         db.DagligFaste.Add(df);
+        patient.ordinationer.Add(df);
+        
         db.SaveChanges();
         return df;
     }
@@ -162,22 +173,46 @@ public class DataService
         var patient = db.Patienter.Find(patientId);
         var lm = db.Laegemiddler.Find(laegemiddelId);
         
-        DagligSkæv ds = new DagligSkæv(startDato, slutDato, patient, lm, doser);
-
+        DagligSkæv ds = new DagligSkæv(startDato, slutDato, lm, doser);
+        if (doser == null || doser.Length == 0 )
+        {
+            throw new Exception("Der skal angives minimum 1 tid");
+        }
+        foreach(var Dosis in doser )
+        {
+            if (Dosis.antal <= 0)
+            {
+                throw new Exception("Dosis kan ikke være 0");
+            }  
+        }
         db.DagligSkæve.Add(ds);
+        patient.ordinationer.Add(ds);
         db.SaveChanges();
 
         return ds;
     }
-/*
+
     public string AnvendOrdination(int id, Dato dato)
     {
-        var pnId = db.PNs.Find(id);
-        db.Dato.dato(givDosis);
-        db.SaveChanges();
-        return null!;
+        var ordination = db.PNs.Include(o => o.dates).FirstOrDefault(o => o.OrdinationId == id);
+        if (ordination == null)
+        {
+            throw new Exception("Ingen ordination fundet");
+        } else if (ordination.startDen > dato.dato || ordination.slutDen < dato.dato)
+        {
+            return "Dato uden for ordinations gyldighedsperiode";
+        }
+        else if (ordination.givDosis(dato))
+        {
+            db.SaveChanges();
+            return "Ordination registreret";
+        }
+        else
+        {
+            return "Dato allerede registreret";
+        }
     }
-    */
+    
   
 
     /// <summary>
@@ -187,9 +222,21 @@ public class DataService
     /// <param name="patient"></param>
     /// <param name="laegemiddel"></param>
     /// <returns></returns>
-	public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId) {
-        
-        return -1;
+	public double GetAnbefaletDosisPerDøgn(int patientId, int laegemiddelId)
+    {
+        var patient = db.Patienter.Find(patientId);
+        var lm = db.Laegemiddler.Find(laegemiddelId);
+        if (patient.vaegt < 25)
+        {
+            return patient.vaegt * lm.enhedPrKgPrDoegnLet;
+        } else if (patient.vaegt < 120)
+        {
+            return patient.vaegt * lm.enhedPrKgPrDoegnNormal;
+        }
+        else
+        {
+            return patient.vaegt * lm.enhedPrKgPrDoegnTung;
+        }
 	}
     
 }

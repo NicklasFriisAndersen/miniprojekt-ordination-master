@@ -8,7 +8,7 @@ public class DagligFast : Ordination {
     public Dosis AftenDosis { get; set; } = new Dosis();
     public Dosis NatDosis { get; set; } = new Dosis();
 
-	public DagligFast(DateTime startDen, DateTime slutDen, Patient? patient, Laegemiddel laegemiddel,
+	public DagligFast(DateTime startDen, DateTime slutDen, Laegemiddel laegemiddel,
 		double morgenAntal, double middagAntal, double aftenAntal, double natAntal) : base(laegemiddel, startDen, slutDen) {
         MorgenDosis = new Dosis(CreateTimeOnly(6, 0, 0), morgenAntal);
         MiddagDosis = new Dosis(CreateTimeOnly(12, 0, 0), middagAntal);
