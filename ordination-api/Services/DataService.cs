@@ -169,11 +169,16 @@ public class DataService
 
         return ds;
     }
-
-    public string AnvendOrdination(int id, Dato dato) {
-        // TODO: Implement!
+/*
+    public string AnvendOrdination(int id, Dato dato)
+    {
+        var pnId = db.PNs.Find(id);
+        db.Dato.dato(givDosis);
+        db.SaveChanges();
         return null!;
     }
+    */
+  
 
     /// <summary>
     /// Den anbefalede dosis for den pågældende patient, per døgn, hvor der skal tages hensyn til
