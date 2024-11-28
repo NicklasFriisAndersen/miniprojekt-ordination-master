@@ -136,7 +136,14 @@ public class DataService
         var lm = db.Laegemiddler.Find(laegemiddelId);
 
        PN pn = new PN(startDato, slutDato, antal, lm);
-
+       if (antal <= 0)
+       {
+           throw new Exception("Doser kan ikke være 0 eller negative tal");
+       }
+       if (startDato > slutDato)
+       {
+           throw new Exception("Din startdato kan ikke være efter din slutdato");
+       }
        db.PNs.Add(pn);
        patient.ordinationer.Add(pn);
        db.SaveChanges();
@@ -178,13 +185,22 @@ public class DataService
         {
             throw new Exception("Der skal angives minimum 1 tid");
         }
+        var tidsSet = new HashSet<DateTime>();
         foreach(var Dosis in doser )
         {
             if (Dosis.antal <= 0)
             {
-                throw new Exception("Dosis kan ikke være 0");
-            }  
+                throw new Exception("Dosis kan ikke være 0 eller negativ");
+            }  if (!tidsSet.Add(Dosis.tid)) {
+                throw new Exception($"Dosis.tid '{Dosis.tid}' er allerede registreret for en anden dosis");
+            }
+
+            if (startDato > slutDato)
+            {
+                throw new Exception("Startdato kan ikke være efter slutdato");
+            }
         }
+        
         db.DagligSkæve.Add(ds);
         patient.ordinationer.Add(ds);
         db.SaveChanges();

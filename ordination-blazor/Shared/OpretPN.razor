@@ -71,14 +71,22 @@
     private DateTime SlutDato { get; set; } = DateTime.Now.AddDays(3);
 
     private async void Opret() {
-        if (Patient == null || laegemiddel == null) {
-            return;
+        try
+        {
+            if (Patient == null || laegemiddel == null) {
+                return;
+            }
+            Console.WriteLine("Opret");
+            PN pn = await apiService.OpretPN(Patient.id, laegemiddel.LaegemiddelId, antalEnheder, StartDato, SlutDato);
+            Console.WriteLine("Oprettet!");
+            Console.WriteLine(pn);
+            onDone?.Invoke($"Oprettet PN ordination for {Patient.navn}!");
         }
-        Console.WriteLine("Opret");
-        PN pn = await apiService.OpretPN(Patient.id, laegemiddel.LaegemiddelId, antalEnheder, StartDato, SlutDato);
-        Console.WriteLine("Oprettet!");
-        Console.WriteLine(pn);
-        onDone?.Invoke($"Oprettet PN ordination for {Patient.navn}!");
+        
+            catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
 }
