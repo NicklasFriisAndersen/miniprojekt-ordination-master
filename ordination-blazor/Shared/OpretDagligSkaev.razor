@@ -111,9 +111,9 @@
             Console.WriteLine(ordination);
             onDone?.Invoke($"Oprettet Daglig Skæv ordination for {Patient.navn}!");
         }
-        catch (Exception e)
+        catch (ArgumentException ex)
         {
-            Console.WriteLine(e);
+            Console.WriteLine(ex.Message);
         }
         
     }

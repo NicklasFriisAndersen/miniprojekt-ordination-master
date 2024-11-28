@@ -138,11 +138,11 @@ public class DataService
        PN pn = new PN(startDato, slutDato, antal, lm);
        if (antal <= 0)
        {
-           throw new Exception("Doser kan ikke være 0 eller negative tal");
+           throw new ArgumentException("Doser kan ikke være 0 eller negative tal");
        }
        if (startDato > slutDato)
        {
-           throw new Exception("Din startdato kan ikke være efter din slutdato");
+           throw new ArgumentException("Din startdato kan ikke være efter din slutdato");
        }
        db.PNs.Add(pn);
        patient.ordinationer.Add(pn);
@@ -162,12 +162,12 @@ public class DataService
         DagligFast df = new DagligFast(startDato, slutDato, lm, antalMorgen, antalMiddag, antalAften, antalNat);
         if (antalMorgen < 0 || antalMiddag < 0 || antalAften < 0 || antalNat < 0)
         {
-            throw new Exception("Doser kan ikke være negative tal");
+            throw new ArgumentException("Doser kan ikke være negative tal");
         }
 
         if (startDato > slutDato)
         {
-            throw new Exception("Din startdato kan ikke være efter din slutdato");
+            throw new ArgumentException("Din startdato kan ikke være efter din slutdato");
         }
         db.DagligFaste.Add(df);
         patient.ordinationer.Add(df);
@@ -183,21 +183,21 @@ public class DataService
         DagligSkæv ds = new DagligSkæv(startDato, slutDato, lm, doser);
         if (doser == null || doser.Length == 0 )
         {
-            throw new Exception("Der skal angives minimum 1 tid");
+            throw new ArgumentException("Der skal angives minimum 1 tid");
         }
         var tidsSet = new HashSet<DateTime>();
         foreach(var Dosis in doser )
         {
             if (Dosis.antal <= 0)
             {
-                throw new Exception("Dosis kan ikke være 0 eller negativ");
+                throw new ArgumentException("Dosis kan ikke være 0 eller negativ");
             }  if (!tidsSet.Add(Dosis.tid)) {
-                throw new Exception($"Dosis.tid '{Dosis.tid}' er allerede registreret for en anden dosis");
+                throw new ArgumentException($"Dosis.tid '{Dosis.tid}' er allerede registreret for en anden dosis");
             }
 
             if (startDato > slutDato)
             {
-                throw new Exception("Startdato kan ikke være efter slutdato");
+                throw new ArgumentException("Startdato kan ikke være efter slutdato");
             }
         }
         

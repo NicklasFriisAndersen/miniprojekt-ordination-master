@@ -83,9 +83,9 @@
             onDone?.Invoke($"Oprettet PN ordination for {Patient.navn}!");
         }
         
-            catch (Exception e)
+            catch (ArgumentException ex)
         {
-            Console.WriteLine(e);
+            Console.WriteLine(ex.Message);
         }
     }
 

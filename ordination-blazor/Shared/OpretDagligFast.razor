@@ -106,9 +106,9 @@
             Console.WriteLine("Oprettet!");
             onDone?.Invoke($"Oprettet Daglig Fast ordination for {Patient.navn}!");
         }
-        catch(Exception e)
+        catch (ArgumentException ex)
         {
-            Console.WriteLine(e);
+            Console.WriteLine(ex.Message);
         }
         
     }
