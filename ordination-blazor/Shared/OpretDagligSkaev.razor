@@ -100,14 +100,22 @@
     private int Antal { get; set; }
 
     private async void Opret() {
-        if (Patient == null || laegemiddel == null) {
-            return;
+        try
+        {
+            if (Patient == null || laegemiddel == null) {
+                return;
+            }
+            Console.WriteLine("Opret");
+            var ordination = await apiService.OpretDagligSkaev(Patient.id, laegemiddel.LaegemiddelId, doser.ToArray(), StartDato, SlutDato);
+            Console.WriteLine("Oprettet!");
+            Console.WriteLine(ordination);
+            onDone?.Invoke($"Oprettet Daglig Skæv ordination for {Patient.navn}!");
         }
-        Console.WriteLine("Opret");
-        var ordination = await apiService.OpretDagligSkaev(Patient.id, laegemiddel.LaegemiddelId, doser.ToArray(), StartDato, SlutDato);
-        Console.WriteLine("Oprettet!");
-        Console.WriteLine(ordination);
-        onDone?.Invoke($"Oprettet Daglig Skæv ordination for {Patient.navn}!");
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        
     }
 
     private void OpretDosis() {
